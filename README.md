@@ -1,8 +1,8 @@
 # NEET College Predictor
 
-A mobile-first web app that predicts which government MBBS colleges a NEET aspirant can likely get based on their score, category, and home state — and captures the lead so NEETPrep can follow up.
+**Live app:** https://neet-college-predictor-5bddqcdgvhkltj8suxkwzb.streamlit.app/
 
-**Live app:** [URL after deploy]
+A mobile-first web app that predicts which government MBBS colleges a NEET aspirant can likely get based on their score, category, and home state — and captures the lead so NEETPrep can follow up.
 
 ## What it does
 
