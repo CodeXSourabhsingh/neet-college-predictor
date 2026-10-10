@@ -32,3 +32,23 @@ def save_lead(name, phone, score, category, state, air,
         _phone_cache.add(str(phone))
     except Exception:
         pass
+
+
+def send_event(event_name, score="", category="", state="",
+               safe_count="", moderate_count="", reach_count="",
+               utm_source="", device=""):
+    try:
+        requests.post(SHEET_URL, json={
+            "type": "event",
+            "event": event_name,
+            "score": score,
+            "category": category,
+            "state": state,
+            "safe_count": safe_count,
+            "moderate_count": moderate_count,
+            "reach_count": reach_count,
+            "utm_source": utm_source,
+            "device": device,
+        }, timeout=5)
+    except Exception:
+        pass

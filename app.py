@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from Predictor import score_to_air, bucket_colleges
-from sheets import save_lead, phone_exists
+from sheets import save_lead, phone_exists, send_event
 
 st.set_page_config(page_title="NEET College Predictor", layout="centered")
 
@@ -17,6 +17,9 @@ if "utm_source" not in st.session_state:
     st.session_state.utm_source = st.query_params.get("utm_source", "")
     st.session_state.utm_medium = st.query_params.get("utm_medium", "")
     st.session_state.utm_campaign = st.query_params.get("utm_campaign", "")
+
+if "device" not in st.session_state:
+    st.session_state.device = "mobile_unknown"
 
 score = st.slider("Your NEET score", 0, 720, 500)
 
@@ -37,9 +40,14 @@ state = st.selectbox(
     ]
 )
 
-
 air = score_to_air(score)
 st.info(f"Your estimated All India Rank: **{air:,}**")
+
+if "page_view_fired" not in st.session_state:
+    send_event("page_view",
+               utm_source=st.session_state.utm_source,
+               device=st.session_state.device)
+    st.session_state.page_view_fired = True
 
 st.subheader("Unlock your college list")
 
@@ -51,7 +59,12 @@ with st.form("lead_form"):
     )
     submitted = st.form_submit_button("Show my colleges")
 
+
 if submitted:
+    if name and "form_start_fired" not in st.session_state:
+        send_event("form_start", utm_source=st.session_state.utm_source)
+        st.session_state.form_start_fired = True
+
     if not name.strip():
         st.error("Please enter your name.")
     elif not (phone.isdigit() and len(phone) == 10):
@@ -59,6 +72,10 @@ if submitted:
     elif not consent:
         st.error("Please accept the consent note to continue.")
     else:
+        send_event("form_submit",
+                   score=score, category=category, state=state,
+                   utm_source=st.session_state.utm_source)
+
         if phone_exists(phone):
             st.warning("This phone number is already in our list. Showing your results anyway.")
         else:
@@ -73,10 +90,15 @@ if submitted:
         st.session_state.buckets = (safe, moderate, reach)
         st.session_state.submitted = True
 
-
 if st.session_state.submitted and st.session_state.buckets:
 
     safe, moderate, reach = st.session_state.buckets
+
+    send_event("result_view",
+               safe_count=len(safe),
+               moderate_count=len(moderate),
+               reach_count=len(reach),
+               utm_source=st.session_state.utm_source)
 
     st.divider()
     st.subheader("Colleges you can likely get")
@@ -102,8 +124,8 @@ if st.session_state.submitted and st.session_state.buckets:
                 st.write(f"**{c['college']}** — {c['city']} (closing AIR {c['closing_rank']}){badge}")
         else:
             st.caption("No colleges in this bucket.")
-            
-        st.markdown("### 🔴 Reach") 
+
+        st.markdown("### 🔴 Reach")
         if reach:
             for c in reach:
                 badge = " ⭐ Home state" if c["home_state_badge"] else ""
