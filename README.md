@@ -1,1 +1,0 @@
-# neet-college-predictor
