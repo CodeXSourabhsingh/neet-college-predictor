@@ -47,6 +47,23 @@ The data is indicative, prepared for this exercise. Not official MCC data.
 
 AI was used as a coding partner for syntax and boilerplate — the same way a developer uses Stack Overflow. The architecture, the flow decisions, the bucket boundaries, the lead gate position, and the validation logic were designed by me. Every piece was tested against the assignment's worked example (score 600 → AIR 1,300 → KEM Mumbai / AIIMS Nagpur / AIIMS Raipur).
 
+## Human in the loop
+
+The tool flags and guides. It does not decide.
+
+Three deliberate choices reflect this:
+
+**1. Soft duplicate signal, not a block.**
+When a phone number is already in the list, the app shows a warning — *"This phone number is already in our list. Showing your results anyway."* — and still renders the results. A hard reject would have failed the user for coming back. The signal is for us, not for them.
+
+**2. Fallback path, not a dead end.**
+When no college matches the score, the app doesn't show a blank page. It says: *"No colleges match your score in this category. Consider state-quota counselling — it often has lower cutoffs."* A script returns nothing. A product returns a next action.
+
+**3. Disclaimer, not a diagnosis.**
+The closing ranks are indicative. The results page says so, in plain language: *"Not official MCC data. Verify with official counselling sources before making decisions."* The tool surfaces options. The student, their parents, and the counsellor make the call.
+
+This mirrors the same principle used in HEMA-CORE and PRISM — clinical tools flag, clinicians decide. Same architecture, different domain: predict, don't prescribe.
+
 ## Run locally
 
 ```bash
